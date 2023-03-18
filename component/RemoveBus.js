@@ -28,7 +28,7 @@ const RemoveBus = () => {
             {
               text: 'OK',
               onPress: async () => {
-                await deleteDoc(doc(collection(database, 'Buses'), documentId));
+                await deleteDoc(doc(collection(database, 'Route 1'), documentId));
                 console.log('Document successfully deleted!', documentId);
               },
             },
@@ -51,13 +51,14 @@ const RemoveBus = () => {
                   style={{
                     marginRight: 10
                   }}
+                  onPress={()=>navigation.navigate('Signout')}
                 >
                   <FontAwesome name="user" size={25} color={'#1C64D1'} style={{marginRight: 10}}/>
                 </TouchableOpacity>
             ),
         });
     }, [navigation]);
-    const collectionRef = collection(database, 'Buses');
+    const collectionRef = collection(database, 'Route 1');
     useLayoutEffect(() => {
 
         const q = query(collectionRef, orderBy('time', 'desc'));

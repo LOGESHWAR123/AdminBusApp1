@@ -14,7 +14,7 @@ export default function EditBus({route}) {
   const [phone,setphone]=useState();
   const navigation = useNavigation();
   const [price,setprice] =  useState(route.params.price1);
-  const [route2,setroute] =  useState(route.params.route1);
+  const [route2,setroute] =  useState(route.params.routeid);
   const [time,settime] =  useState(route.params.time1);
   const { name1} = route.params;
   const [editMode, setEditMode] = useState(false);
@@ -26,12 +26,12 @@ export default function EditBus({route}) {
  
     const handleEdit = async () => {
         try {
-          name1 = name
-          const busDocRef = doc(database, "Buses", name1);
+
+          const busDocRef = doc(database, "Route 1", name1);
           const updatedData = {
 
-            price:parseInt(price,10),
-            route: parseInt(route2,10),
+            price:price,
+            routeid: route,
             time: time
           };
           await setDoc(busDocRef, updatedData, { merge: true });
@@ -66,7 +66,7 @@ export default function EditBus({route}) {
                   placeholder="Enter your Name"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  value={route2.toString()}
+                  value={route2}
                   editable={editMode}
                   onChangeText={(text) => setroute(text)}
         /> 

@@ -10,30 +10,62 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import {collection,addDoc,orderBy,query,onSnapshot,getDocs,docRef,getDoc,setDoc,doc,QuerySnapshot,collectionGroup,getCountFromServer} from 'firebase/firestore';
 //import { TouchableOpacity } from 'react-native-gesture-handler';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 const FormPage = () => {
   const [destination, setDestination] = useState('');
   const [route, setRouteNo] = useState('');
   const [price, setPrice] = useState('');
-  const [time, settime] = useState('');
-
+  const [time, setTime] = useState(new Date());
+  const [show, setShow] = useState('Enter time');
+  const [date,setdate] = useState('Enter Date');
   const handleSubmit = async () => {
     try {
-      const docRef = await setDoc(doc(database, 'Buses',destination), {
-        route:parseInt(route,10),
-        price:parseInt(price,10),
+      const docRef = await setDoc(doc(database, 'Route 1',destination), {
+        routeid:route,
+        price:price,
         time:time,
       });
       // reset the form inputs
       setDestination('');
       setRouteNo('');
       setPrice('');
-      settime('');
+      setTime('');
       Alert.alert('Success', 'Bus added successfully');
     } catch (e) {
       console.error('Error adding document: ', e);
     }
   };
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
 
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+  const hideTimePicker1 = () => {
+    setTimePickerVisibility(false);
+  };
+  const handleConfirm = (date) => {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec',];
+    var Date = date.getDate()
+    var year = date.getFullYear()
+    var formattedDate=months[date.getMonth()] + " " + Date.toString() + " " +year
+     setTime(formattedDate);
+     setdate(formattedDate);
+    hideDatePicker();
+  };
+  const handleConfirm1 = (time) => {
+    var hrs = time.getHours()
+    var min = time.getMinutes()
+    var out = hrs + ":" + min 
+    setShow(out);
+    hideTimePicker1();
+  };
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
@@ -64,15 +96,24 @@ const FormPage = () => {
           value={price}
           onChangeText={setPrice}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Destination Time"
-
-          autoCapitalize="none"
-          autoCorrect={false}
-          value={time}
-          onChangeText={settime}
-        />
+      <TouchableOpacity onPress={showDatePicker} style={styles.input} >
+        <Text style={{marginTop:'4%',color:'#a9a9a9'}}>{date.toString()}</Text>
+        <DateTimePicker
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+        /> 
+      </TouchableOpacity>
+      <TouchableOpacity onPress={showTimePicker} style={styles.input} >
+        <Text style={{marginTop:'4%',color:'#a9a9a9'}}>{show.toString()}</Text>
+        <DateTimePicker
+        isVisible={isTimePickerVisible}
+        mode="time"
+        onConfirm={handleConfirm1}
+        onCancel={hideTimePicker1}
+        /> 
+      </TouchableOpacity>
       </View>
       <TouchableOpacity style={{justifyContent:"center",alignItems:"center",bottom:30}}  onPress={handleSubmit}>
        <View style={{height:60,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:50}}>
@@ -92,7 +133,7 @@ const styles = StyleSheet.create({
     justifyContent :"center"
   },
   subcontainer: {
-    height: 350,
+    height: 500,
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },

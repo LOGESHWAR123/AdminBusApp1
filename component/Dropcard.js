@@ -12,7 +12,6 @@ const DropCard = ({place,time,price}) => {
 
                 <View  style={{justifyContent:"space-evenly",marginRight:10}}>
                 <Text style={{fontSize:20,fontWeight:"bold",color:colors.primary}}>{price}</Text>
-                <Text style={{fontSize:15,}}>9h</Text>
                 <Text style={{fontSize:12,color:colors.primary}}>Edit</Text>
                 </View>
                 

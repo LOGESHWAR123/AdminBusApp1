@@ -29,13 +29,14 @@ const UpdateBus = () => {
                   style={{
                     marginRight: 10
                   }}
+                  onPress={()=>navigation.navigate('Signout')}
                 >
                   <FontAwesome name="user" size={25} color={'#1C64D1'} style={{marginRight: 10}}/>
                 </TouchableOpacity>
             ),
         });
     }, [navigation]);
-    const collectionRef = collection(database, 'Buses');
+    const collectionRef = collection(database, 'Route 1');
     useLayoutEffect(() => {
 
         const q = query(collectionRef, orderBy('time', 'desc'));
@@ -47,7 +48,7 @@ const UpdateBus = () => {
               name:doc.id,
               price: doc.data().price,
               time:doc.data().time ,
-              route:doc.data().route,
+              routeid:doc.data().routeid,
             }))
           ),
           SetArea(
@@ -89,9 +90,9 @@ const UpdateBus = () => {
                     <Text style={{fontSize:15,color:'white'}}>Add new Bus</Text>
                 </TouchableOpacity>
             </View>
-            <ScrollView>
+            <ScrollView style={{marginTop:15}}>
             {filteredData.map((value,key)=>
-                <TouchableOpacity key={key} onPress={() => navigation.navigate('EditBus', { name1: value.name, price1: value.price, route1:value.route,time1:value.time})}>
+                <TouchableOpacity key={key} onPress={() => navigation.navigate('EditBus', { name1: value.name, price1: value.price, routeid:value.routeid,time1:value.time})}>
                     <DropCard  place={value.name} time={value.time} price={value.price}/>
                 </TouchableOpacity>
             )

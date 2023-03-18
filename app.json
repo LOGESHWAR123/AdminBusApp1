@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "busappadmin",
+    "name": "BusAppAdmin",
     "slug": "busapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1C64D1"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,14 +24,15 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.logeshwar.busapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "64bc988a-c222-4b42-8548-ba77926d4e9c"
+        "projectId": "a7c88ec8-54a5-4261-8d43-5ada121b0c9f"
       }
     }
   }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert,  } from "react-native";
 import { signInWithEmailAndPassword,fetchSignInMethodsForEmail,createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, database } from "../config/firebase";
+import { auth} from "../config/firebase";
 import colors from "../colors";
 import { doc, setDoc } from "firebase/firestore"; 
 import { useNavigation } from "@react-navigation/native";

@@ -1,4 +1,6 @@
-import {React,useState,useLayoutEffect} from 'react';
+import {React,useState,useLayoutEffect,useEffect} from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+import colors from "../colors";
 import { View, Text, Dimensions, StatusBar, Button, TouchableOpacity} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { database } from '../config/firebase';
@@ -38,6 +40,25 @@ function Busroute() {
       
       []); 
       console.log(bookings);
+      useEffect(() => {
+        navigation.setOptions({
+
+            headerLeft: () => (
+                <FontAwesome name="home" size={24} color={colors.gray} style={{marginLeft: 15}}/>
+            ),
+
+            headerRight: () => (
+                <TouchableOpacity
+                  style={{
+                    marginRight: 10
+                  }}
+                  onPress={()=>navigation.navigate('Signout')}
+                >
+                  <FontAwesome name="user" size={25} color={'#1C64D1'} style={{marginRight: 10}} />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -64,7 +85,7 @@ function Busroute() {
                  <Text>{booking.Name}</Text>
                 <Text>{booking.Id}</Text>
               </View>
-              <View style={{flexDirection: 'column', alignItems: 'flex-end',marginHorizontal:'10%'}}>
+              <View style={{flexDirection: 'column', alignItems: 'flex-end',marginHorizontal:'15%'}}>
                 <Text>{booking.destination}</Text>
                 <Text>{booking.price}</Text>
               </View>
@@ -72,14 +93,14 @@ function Busroute() {
           </View>
         ))}
     </View>
-    <View style={styles.button} >
-      <TouchableOpacity style={styles.viewbook} onPress={()=>navigation.navigate('PreviousBooking')}>
-        <Text style={styles.text}>View Bookings</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.viewbook , {marginHorizontal:60}]} onPress={()=>navigation.navigate('UpdateBus')} >
-        <Text style={styles.text}>Update Bus</Text>
-      </TouchableOpacity>
-    </View>
+    <View style={styles.addbus}>
+         <TouchableOpacity style={styles.removeBus} onPress={()=>navigation.navigate('PreviousBooking')}>
+                    <Text style={{fontSize:15,color:'white'}}>Bookings</Text>
+           </TouchableOpacity>
+            <TouchableOpacity style={styles.addNewBus} onPress={()=>navigation.navigate('UpdateBus')}>
+                    <Text style={{fontSize:15,color:'white'}}>UpdateBus</Text>
+            </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -128,16 +149,28 @@ prevbook: {
 bo:{
   marginTop: '3%',
 },
-
-button:{
-  marginTop: '10%',
-  marginLeft : '10%',
+addbus: {
   flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignSelf: 'flex-end',
+  marginTop: '10%',
+  marginHorizontal: 20,
 },
-viewbook:{
+removeBus: {
+  backgroundColor: '#0672CF',
+  padding: 10,
+  marginRight: 10,
+  flex: 1,
+  alignItems: 'center',
+  borderRadius: 5,
+},
+addNewBus: {
   backgroundColor:'#0672CF',
-  padding : 10,
-}
+  padding: 10,
+  flex: 1,
+  alignItems: 'center',
+  borderRadius: 5,
+},
 });
 
 export default Busroute;
