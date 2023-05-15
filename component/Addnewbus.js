@@ -15,21 +15,28 @@ const FormPage = () => {
   const [destination, setDestination] = useState('');
   const [route, setRouteNo] = useState('');
   const [price, setPrice] = useState('');
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState('Enter Departure Time');
   const [show, setShow] = useState('Enter time');
   const [date,setdate] = useState('Enter Date');
+  const [drivername,setdrivername] = useState('');
+  const [drivercontact,setdrivercontact] = useState('');
   const handleSubmit = async () => {
     try {
-      const docRef = await setDoc(doc(database, 'Route 1',destination), {
+      const docRef = await setDoc(doc(database, 'Buses',destination), {
+        date:date,
         routeid:route,
         price:price,
         time:time,
+        drivername:drivername,
+        drivernumber:drivercontact,
       });
       // reset the form inputs
       setDestination('');
       setRouteNo('');
       setPrice('');
-      setTime('');
+      setTime('Enter Departure Time');
+      setdrivercontact('');
+      setdrivername('');
       Alert.alert('Success', 'Bus added successfully');
     } catch (e) {
       console.error('Error adding document: ', e);
@@ -51,19 +58,19 @@ const FormPage = () => {
     setTimePickerVisibility(false);
   };
   const handleConfirm = (date) => {
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec',];
+   // var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec',];
     var Date = date.getDate()
     var year = date.getFullYear()
-    var formattedDate=months[date.getMonth()] + " " + Date.toString() + " " +year
-     setTime(formattedDate);
-     setdate(formattedDate);
+    var month = date.getMonth();
+    var format = Date+"-" +month+"-"+year;
+     setdate(format);
     hideDatePicker();
   };
   const handleConfirm1 = (time) => {
     var hrs = time.getHours()
     var min = time.getMinutes()
     var out = hrs + ":" + min 
-    setShow(out);
+    setTime(out);
     hideTimePicker1();
   };
   return (
@@ -77,6 +84,24 @@ const FormPage = () => {
           autoCorrect={false}
           value={destination}
           onChangeText={setDestination}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Driver name"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={drivername}
+          onChangeText={setdrivername}
+        />
+         <TextInput
+          style={styles.input}
+          placeholder="Enter Driver number"
+          autoCapitalize="none"
+          keyboardType="numeric"
+          maxLength={10}
+          autoCorrect={false}
+          value={drivercontact}
+          onChangeText={setdrivercontact}
         />
         <TextInput
           style={styles.input}
@@ -106,7 +131,7 @@ const FormPage = () => {
         /> 
       </TouchableOpacity>
       <TouchableOpacity onPress={showTimePicker} style={styles.input} >
-        <Text style={{marginTop:'4%',color:'#a9a9a9'}}>{show.toString()}</Text>
+        <Text style={{marginTop:'4%',color:'#a9a9a9'}}>{time.toString()}</Text>
         <DateTimePicker
         isVisible={isTimePickerVisible}
         mode="time"
@@ -128,9 +153,8 @@ export default FormPage;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop:40,
     flex:1, 
-    justifyContent :"center"
+    justifyContent :"center",
   },
   subcontainer: {
     height: 500,
@@ -140,7 +164,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    padding: 10,
     color: 'black',
   },
   input: {
@@ -148,7 +171,7 @@ const styles = StyleSheet.create({
    borderColor:colors.primary, 
    width:"90%", 
    height:50,  
-   borderRadius:5,
+   borderRadius:10,
    paddingHorizontal: 20,
   },
 });

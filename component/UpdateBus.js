@@ -36,10 +36,10 @@ const UpdateBus = () => {
             ),
         });
     }, [navigation]);
-    const collectionRef = collection(database, 'Route 1');
+    const collectionRef = collection(database, 'Buses');
     useLayoutEffect(() => {
 
-        const q = query(collectionRef, orderBy('time', 'desc'));
+        const q = query(collectionRef);
         const unsubscribe = onSnapshot(q, querySnapshot => {
           setRouteway(
             querySnapshot.docs.map(doc => 
@@ -69,6 +69,33 @@ const UpdateBus = () => {
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const [seatcount,addseatcount]=useState([{"0":0}]);
+  const collectionRef1 = collection(database, "SeatBookingCount");
+  useLayoutEffect(() => {
+    //const collectionRef = collection(database, "Route 1");
+    //const q = query(collectionRef1, orderBy("time", "desc"));
+    const unsubscribe = onSnapshot(collectionRef1, (querySnapshot) => {
+      addseatcount(
+        querySnapshot.docs.map((doc) => ({
+          [doc.id]:doc.data().seats
+        }))
+      ),
+        
+
+      console.log(querySnapshot.size);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  function findseat(routeid){
+    for (let i = 0; i < seatcount.length; i++) {
+      if (seatcount[i][routeid]>=0) {
+        return seatcount[i][routeid]; 
+      }
+      
+    }
+  }
 
   return (
         <View style={styles.container}>
@@ -93,7 +120,7 @@ const UpdateBus = () => {
             <ScrollView style={{marginTop:15}}>
             {filteredData.map((value,key)=>
                 <TouchableOpacity key={key} onPress={() => navigation.navigate('EditBus', { name1: value.name, price1: value.price, routeid:value.routeid,time1:value.time})}>
-                    <DropCard  place={value.name} time={value.time} price={value.price}/>
+                    <DropCard  place={value.name} time={value.time} price={value.price} seat={findseat(value.routeid)}/>
                 </TouchableOpacity>
             )
         }

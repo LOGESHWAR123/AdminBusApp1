@@ -4,8 +4,10 @@ import colors from "../colors";
 import { View, Text, Dimensions, StatusBar, Button, TouchableOpacity} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { database } from '../config/firebase';
-import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, limit,getCountFromServer} from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { encode } from 'base-64';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -16,6 +18,10 @@ const width = screenWidth * 0.998;
 function Busroute() {
   const navigation=useNavigation();
   const [bookings,setbookings]=useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [booking1,setbookings1] = useState(0);
+  const [bus,setbus] = useState(0)
+  
   const collectionRef = collection(database, 'previous booking'); 
     useLayoutEffect(() => {
 
@@ -39,7 +45,33 @@ function Busroute() {
       }, 
       
       []); 
+
+      const collectionRef1 = collection(database,'Buses'); 
+    useLayoutEffect(() => {
+
+        const q = query(collectionRef1)
+        const unsubscribe = onSnapshot(q, querySnapshot => {
+    
+            querySnapshot.docs.map(doc => 
+              (
+              {
+              Name:doc.data().Name,
+              Id:doc.data().Id,
+              destination:doc.data().Destination,
+              price:doc.data().Price,
+            }))
+
+          console.log(querySnapshot.size);
+          setbus(querySnapshot.size);
+        });        
+      
+      return unsubscribe;
+      }, 
+      
+      []); 
+
       console.log(bookings);
+  
       useEffect(() => {
         navigation.setOptions({
 
@@ -60,6 +92,40 @@ function Busroute() {
         });
     }, [navigation]);
 
+    // useEffect(() => {
+    //   const fetchPayments = async () => {
+    //     try {
+    //       let totalAmount = 0;
+    //       let hasNext = true;
+    //       let skip = 0;
+    //       const count = 100; // Increase the count to fetch more payments per request
+    //       while (hasNext) {
+    //         const response = await axios.get(`https://api.razorpay.com/v1/payments?count=${count}&skip=${skip}`, {
+    //           headers: {
+    //             Authorization: `Basic ${encode('rzp_test_AHMQcxkRqC6Spu' + ':' + 'QRYbHWzBklLCs9Dp9WhxJ15V')}`
+    //           },
+    //         });
+    //         const payments = response.data.items.filter(payment => payment.status === "authorized");
+    //         const paymentCount = response.data.count;
+    //         if (payments.length === 0) {
+    //           hasNext = false;
+    //           break;
+    //         }
+    //         setbookings1(paymentCount)
+    //         totalAmount += payments.reduce((acc, curr) => acc + curr.amount/100, 0);
+    //         setTotalAmount(totalAmount)
+    //         console.log(totalAmount,"--->")
+    //       }
+
+    //     } catch (error) {
+    //       console.error(error,"--%%^%%");
+    //     }
+    //   };
+    
+    //   fetchPayments();
+    // }, []);
+    
+
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
@@ -68,13 +134,13 @@ function Busroute() {
           <Text style={[styles.text, { marginHorizontal: screenWidth * 0.1,fontSize:20,fontWeight:'bold'}]}>Buses Available</Text>
         </View>
         <View style={styles.dateContainer}>
-          <Text style={[styles.text, { marginHorizontal: screenWidth * 0.16,fontWeight:'bold'}]}>1200</Text>
-          <Text style={[styles.text, { marginHorizontal: screenWidth * 0.27 ,fontWeight:'bold'}]}>20</Text>
+          <Text style={[styles.text, { marginHorizontal: screenWidth * 0.16,fontWeight:'bold'}]}>{booking1}</Text>
+          <Text style={[styles.text, { marginHorizontal: screenWidth * 0.27 ,fontWeight:'bold'}]}>{bus}</Text>
         </View>
       </View>
       <View style={styles.booking}>
         <Text style={[styles.text, {alignSelf:'center',fontSize : 14,fontWeight : 'bold'}]}>Total Earnings</Text>
-        <Text style={[styles.text , { alignSelf: 'center', fontSize: 15 }]}>20,000</Text>
+        <Text style={[styles.text , { alignSelf: 'center', fontSize: 15 }]}>{totalAmount}</Text>
       </View>
       <View style={styles.prevbook}>
           <Text style={{fontSize:20,fontWeight:'bold'}}>Previous Booking</Text>

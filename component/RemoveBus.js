@@ -30,6 +30,9 @@ const RemoveBus = () => {
               onPress: async () => {
                 await deleteDoc(doc(collection(database, 'Route 1'), documentId));
                 console.log('Document successfully deleted!', documentId);
+                Alert.alert('Bus deleted', `The ${documentId} Bus has been successfully deleted.`, [
+                  { text: 'OK' },
+                ]);
               },
             },
           ]

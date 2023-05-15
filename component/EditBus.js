@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, Touchab
 import { signInWithEmailAndPassword,fetchSignInMethodsForEmail,createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, database } from "../config/firebase";
 import colors from "../colors";
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, setDoc, updateDoc } from "firebase/firestore"; 
 import { useNavigation } from "@react-navigation/native";
-
+import DateTimePicker from 'react-native-modal-datetime-picker';
 export default function EditBus({route}) {
 
   const [email, setEmail] = useState("");
@@ -15,45 +15,63 @@ export default function EditBus({route}) {
   const navigation = useNavigation();
   const [price,setprice] =  useState(route.params.price1);
   const [route2,setroute] =  useState(route.params.routeid);
-  const [time,settime] =  useState(route.params.time1);
+  const [time,setTime] =  useState(route.params.time1);
   const { name1} = route.params;
   const [editMode, setEditMode] = useState(false);
-
+  const [color, setColor] = useState('#a9a9a9');
+  const [showTimePickerInitially, setShowTimePickerInitially] = useState(false);
   // function to toggle edit mode
   const toggleEditMode = () => {
+    setColor(color === '#a9a9a9' ? 'black' : '#a9a9a9');
     setEditMode(!editMode);
+    setShowTimePickerInitially(true);
   };
  
     const handleEdit = async () => {
+      setColor(color === '#a9a9a9' ? 'black' : '#a9a9a9');
         try {
 
-          const busDocRef = doc(database, "Route 1", name1);
-          const updatedData = {
+          const busDocRef = doc(database, "Buses", name1);
+          updateDoc(busDocRef,{
 
             price:price,
-            routeid: route,
+            routeid: route2,
             time: time
-          };
-          await setDoc(busDocRef, updatedData, { merge: true });
+          });
           setEditMode(false);
           Alert.alert("Bus information changed")
+          console.log(price);
         } catch (error) {
           console.error("Error updating bus details:", error);
           Alert.alert("Error updating bus details");
         }
       }
-
- 
+      const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+      const hideTimePicker1 = () => {
+        setTimePickerVisibility(false);
+      };
+      const showTimePicker = () => {
+        if (showTimePickerInitially) {
+          setTimePickerVisibility(true);
+        }
+      };
+      const handleConfirm1 = (time) => {
+        var hrs = time.getHours()
+        var min = time.getMinutes()
+        var out = hrs + ":" + min 
+        setTime(out);
+        hideTimePicker1();
+      };
   
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
       <Text style={{fontSize:25,fontWeight:"bold",color:colors.primary,textAlign:"center",paddingTop:10}}>{name1}</Text>
       <View style={styles.logincontainer}> 
-      <Text>Price</Text>
+      <Text style={styles.text}>Price</Text>
       <TextInput
                 style={styles.loginbox}
-                placeholder="Enter your college mail id"
+                placeholder="Enter price"
                 autoCapitalize="none"
                 autoCorrect={false}
                 value={price.toString()}
@@ -63,7 +81,7 @@ export default function EditBus({route}) {
         <Text>Route</Text>
         <TextInput
                   style={styles.loginbox}
-                  placeholder="Enter your Name"
+                  placeholder="Enter Route id"
                   autoCapitalize="none"
                   autoCorrect={false}
                   value={route2}
@@ -71,18 +89,18 @@ export default function EditBus({route}) {
                   onChangeText={(text) => setroute(text)}
         /> 
         <Text>Time</Text>
-      <TextInput
-                style={styles.loginbox}
-                placeholder="Enter your Mobile Number"
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={time}
-                editable={editMode}
-                onChangeText={(text) => settime(text)}
-       />
+        <TouchableOpacity onPress={showTimePicker} style={styles.loginbox} >
+         <Text style={{marginTop:'4%',color:color}}>{time.toString()}</Text>
+                <DateTimePicker
+                isVisible={isTimePickerVisible}
+                mode="time"
+                onConfirm={handleConfirm1}
+                onCancel={hideTimePicker1}
+                /> 
+      </TouchableOpacity>
 
       </View>
-      <TouchableOpacity style={{justifyContent:"center",alignItems:"center",bottom:40}} onPress={toggleEditMode} >
+      <TouchableOpacity style={{justifyContent:"center",alignItems:"center",bottom:25}} onPress={toggleEditMode} >
         <View style={{height:40,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:50}}>
             <Text style={{fontSize:15,color:"white",fontWeight:"bold"}}>Edit</Text>
         </View>
@@ -99,12 +117,12 @@ export default function EditBus({route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:"center", 
-    alignItems:"center"
+    //justifyContent:"center", 
+    //alignItems:"center"
   },
   subcontainer:{
-    width:300,
-    height: 500,
+    width:"100%",
+    height: "100%",
     backgroundColor:"white",
     borderRadius:15, 
     padding:10
@@ -121,7 +139,8 @@ const styles = StyleSheet.create({
     height:300, 
     backgroundColor:"white", 
     justifyContent:"space-evenly",  
-    alignItems:"center"
+    margin:15
+   // alignItems:"center"
   },
 
   loginbox:{
