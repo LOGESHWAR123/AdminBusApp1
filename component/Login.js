@@ -19,10 +19,14 @@ export default function Login() {
 
           signInWithEmailAndPassword(auth, email, password)
           .then(() => navi.navigate('Busroute'))
-          .catch((err) => Alert.alert("Enter correct mailid/Password"));
+          .catch((err) => Alert.alert('Login Failed', `Kindly Check your Mail id and Password`, [
+            { text: 'OK' },
+          ]));
     }
     else{
-      Alert.alert("Enter your mail id");
+      Alert.alert('Login Failed', `Kindly Check your Mail id and Password`, [
+        { text: 'OK' },
+      ])
     }
   };
   
@@ -34,7 +38,7 @@ export default function Login() {
       <View style={styles.logincontainer}> 
       <TextInput
                 style={styles.loginbox}
-                placeholder="Enter your college id"
+                placeholder=" Enter your admin Id"
                 autoCapitalize="none"
                 autoCorrect={false}
                 
@@ -44,7 +48,7 @@ export default function Login() {
 
       <TextInput
                 style={styles.loginbox}
-                placeholder="Enter password"
+                placeholder=" Enter password"
                 autoCapitalize="none"
                 autoCorrect={false}
                 secureTextEntry={true}
@@ -56,11 +60,11 @@ export default function Login() {
       </View>
       
 
-      <TouchableOpacity style={{justifyContent:"center",alignItems:"center"}} onPress={onHandleLogin} >
-        <View style={{height:60,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",margin:20}}>
+      <View style={{justifyContent:"center",alignItems:"center"}}  >
+        <TouchableOpacity style={{height:60,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",margin:20}} onPress={onHandleLogin}>
             <Text style={{fontSize:15,color:"white",fontWeight:"bold"}}>Login</Text>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
       </View>
     </View>
   );
@@ -73,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems:"center"
   },
   subcontainer:{
-    width:300,
+    width:320,
     height: 400,
     backgroundColor:"white",
     borderRadius:15, 

@@ -13,8 +13,12 @@ import RemoveBus from './component/RemoveBus';
 import EditBus from './component/EditBus';
 import Login from './component/Login';
 import Signout from './component/Signout';
+import Bookings from './component/Bookings';
+import CallDriver from './component/CallDriver';
+import Reports from './component/Reports';
+import Ticketscan from './component/Ticketscan';
 
-
+ 
 const Stack = createStackNavigator();
 const AuthenticatedUserContext = createContext({});
 
@@ -36,7 +40,11 @@ function HomeStack() {
       <Stack.Screen name='Addnewbus' component={AddnewBus} />
       <Stack.Screen name='RemoveBus' component={RemoveBus} />
        <Stack.Screen name='EditBus' component={EditBus}/>
+       <Stack.Screen name='Bookings' component={Bookings}/>
        <Stack.Screen name='Signout' component={Signout}/>
+       <Stack.Screen name='CallDriver' component={CallDriver}/>
+       <Stack.Screen name='Reports' component={Reports}/>
+       <Stack.Screen name='Ticketscan' component={Ticketscan}/>
      </Stack.Navigator>
   );
 }

@@ -20,10 +20,7 @@ const UpdateBus = () => {
     useEffect(() => {
         navigation.setOptions({
 
-            headerLeft: () => (
-                <FontAwesome name="home" size={24} color={colors.gray} style={{marginLeft: 15}}/>
-            ),
-
+        
             headerRight: () => (
                 <TouchableOpacity
                   style={{

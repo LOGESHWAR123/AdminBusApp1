@@ -1,7 +1,7 @@
 import {React,useState,useLayoutEffect,useEffect} from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import colors from "../colors";
-import { View, Text, Dimensions, StatusBar, Button, TouchableOpacity} from 'react-native';
+import { View, Text, Dimensions, StatusBar, Button, TouchableOpacity,Image} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { database } from '../config/firebase';
 import { collection, query, orderBy, onSnapshot, limit,getCountFromServer} from "firebase/firestore";
@@ -22,12 +22,12 @@ function Busroute() {
   const [booking1,setbookings1] = useState(0);
   const [bus,setbus] = useState(0)
   
-  const collectionRef = collection(database, 'previous booking'); 
+  const q = collection(database, 'SeatBookingCount'); 
     useLayoutEffect(() => {
 
-        const q = query(collectionRef,orderBy('SI','desc'),limit(4))
+        
         const unsubscribe = onSnapshot(q, querySnapshot => {
-          setbookings(
+          
             querySnapshot.docs.map(doc => 
               (
               {
@@ -36,9 +36,10 @@ function Busroute() {
               destination:doc.data().Destination,
               price:doc.data().Price,
             }))
-          ),
+          
 
           console.log(querySnapshot.size);
+          setbus(querySnapshot.size);
         });        
       
       return unsubscribe;
@@ -60,9 +61,7 @@ function Busroute() {
               destination:doc.data().Destination,
               price:doc.data().Price,
             }))
-
           console.log(querySnapshot.size);
-          setbus(querySnapshot.size);
         });        
       
       return unsubscribe;
@@ -76,7 +75,7 @@ function Busroute() {
         navigation.setOptions({
 
             headerLeft: () => (
-                <FontAwesome name="home" size={24} color={colors.gray} style={{marginLeft: 15}}/>
+                <FontAwesome name="home" size={24} color={colors.primary} style={{marginLeft: 15}}/>
             ),
 
             headerRight: () => (
@@ -128,6 +127,218 @@ function Busroute() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.subcontainer}>
+        
+      <View style={{flexDirection:"row",justifyContent:"center"}}>
+      <Image
+        style={styles.Logo}
+        source={{uri: 'https://upload.wikimedia.org/wikipedia/en/6/61/Sri_Sai_Ram_Engineering_College_logo.png'}}
+      />
+      {/* <Text style={[styles.CardText,{margin:10}]}>Sairam Bus App</Text> */}
+      </View>
+
+      <View style={styles.SubConMain}>
+          <View style={styles.SubConHeading}>
+            <Text style={styles.SubConText}>Users</Text>
+            <Text style={styles.SubConText}>11</Text>
+          </View>
+
+          <View style={styles.SubConHeading}>
+            <Text style={styles.SubConText}>Bookings</Text>
+            <Text style={styles.SubConText}>{booking1}</Text>
+          </View>
+
+          <View style={styles.SubConHeading}>
+            <Text style={styles.SubConText}>Buses</Text>
+            <Text style={styles.SubConText}>{bus}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={{ backgroundColor: "white", flex: 1, padding: 10,paddingTop:20}}>
+      <Text style={{fontSize:22,fontWeight:"bold",marginLeft:20,color:"black"}}>Dashboard</Text>
+
+        <View style={{ marginTop: 2, backgroundColor: "white",flexDirection:"row",flexWrap:'wrap'}}>
+
+
+          <TouchableOpacity onPress={()=>navigation.navigate('UpdateBus')}>
+          <View style={styles.card} >
+            <Text style={styles.CardText}>Update Buses</Text>
+          </View>
+          </TouchableOpacity>
+
+
+          <TouchableOpacity onPress={()=> navigation.navigate('Bookings')}>
+          <View style={styles.card}>
+            <Text style={styles.CardText}>Bookings</Text>
+          </View>
+          </TouchableOpacity>
+
+
+      
+          {/* <TouchableOpacity>
+          <View style={styles.card}>
+            <Text style={styles.CardText}>Payments</Text>
+          </View>
+          </TouchableOpacity> */}
+
+          <TouchableOpacity onPress={()=> navigation.navigate('CallDriver')}>
+          <View style={styles.card}>
+            <Text style={styles.CardText}>Call Driver</Text>
+          </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={()=> navigation.navigate('Reports')}>
+          <View style={styles.card}>
+            <Text style={styles.CardText}>Reports</Text>
+          </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={()=> navigation.navigate('Ticketscan')}>
+          <View style={styles.card}>
+            <Text style={styles.CardText}>Ticket Scan</Text>
+          </View>
+          </TouchableOpacity>
+
+
+        </View>
+
+
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+
+
+  container:{
+    flex:1, 
+    // backgroundColor:"pink"
+  }, 
+  subcontainer:{
+    height:230,
+    backgroundColor:colors.primary,
+    paddingTop:30,
+    //justifyContent:"center", 
+    //alignItems:"center"
+  },
+  SubConHeading:{
+    flexDirection:"column", 
+    justifyContent:"space-evenly", 
+    marginTop:"1%", 
+    alignItems:"center"
+  },
+  SubConText:{
+    fontSize:26, 
+    fontWeight:"bold",
+    color:"white"
+  }, 
+
+  CardText:{
+    fontSize:20, 
+    fontWeight:"bold",
+    color:"white"
+  },
+  SubConMain:{
+    flexDirection:"row", 
+    justifyContent:"space-around",
+    // backgroundColor:"red",
+    marginBottom:20
+    
+  }, 
+  text:{
+    color:"black", 
+    fontSize:22,
+    fontWeight:"bold"
+  },
+
+  card:{
+    width: 170,
+    height: 100,
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    padding: 12,
+    margin:15, 
+  
+  }, 
+  Logo:{
+    width:90, 
+    height:90,
+    bottom:15,
+  }
+
+//   heading: {
+//     backgroundColor: '#0672CF',
+//     height: 200,
+//     width: width,
+//     flexDirection: 'column',
+//     justifyContent: 'center',
+//   },
+  
+//   texting: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+  
+//   text: {
+//     fontSize: 17,
+//     color: 'white',
+//   },
+  
+//   dateContainer: {
+//     flexDirection: 'row',
+//     marginTop: 17,
+//     justifyContent: 'space-between',
+//   },
+  
+//   booking: {
+//   alignSelf: 'center',
+//   marginTop: '10%',
+//   backgroundColor: '#0672CF',
+//   width: '50%',
+//   height: 50,
+// },
+
+// prevbook: {
+//   marginTop: '10%',
+//   marginLeft : '10%',
+// },
+
+// bo:{
+//   marginTop: '3%',
+// },
+// addbus: {
+//   flexDirection: 'row',
+//   justifyContent: 'space-between',
+//   alignSelf: 'flex-end',
+//   marginTop: '10%',
+//   marginHorizontal: 20,
+// },
+// removeBus: {
+//   backgroundColor: '#0672CF',
+//   padding: 10,
+//   marginRight: 10,
+//   flex: 1,
+//   alignItems: 'center',
+//   borderRadius: 5,
+// },
+// addNewBus: {
+//   backgroundColor:'#0672CF',
+//   padding: 10,
+//   flex: 1,
+//   alignItems: 'center',
+//   borderRadius: 5,
+// },
+});
+
+export default Busroute;
+
+
+
+{/* <View style={styles.container}>
       <View style={styles.heading}>
         <View style={styles.texting}>
           <Text style={[styles.text, { marginHorizontal: screenWidth * 0.1,fontSize:20,fontWeight:'bold'}]}>Bookings</Text>
@@ -167,76 +378,35 @@ function Busroute() {
                     <Text style={{fontSize:15,color:'white'}}>UpdateBus</Text>
             </TouchableOpacity>
       </View>
-    </View>
-  );
-}
+    </View> */}
 
-const styles = StyleSheet.create({
 
-  heading: {
-    backgroundColor: '#0672CF',
-    height: 200,
-    width: width,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  
-  texting: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  
-  text: {
-    fontSize: 17,
-    color: 'white',
-  },
-  
-  dateContainer: {
-    flexDirection: 'row',
-    marginTop: 17,
-    justifyContent: 'space-between',
-  },
-  
-  booking: {
-  alignSelf: 'center',
-  marginTop: '10%',
-  backgroundColor: '#0672CF',
-  width: '50%',
-  height: 50,
-},
 
-prevbook: {
-  marginTop: '10%',
-  marginLeft : '10%',
-},
-
-bo:{
-  marginTop: '3%',
-},
-addbus: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignSelf: 'flex-end',
-  marginTop: '10%',
-  marginHorizontal: 20,
-},
-removeBus: {
-  backgroundColor: '#0672CF',
-  padding: 10,
-  marginRight: 10,
-  flex: 1,
-  alignItems: 'center',
-  borderRadius: 5,
-},
-addNewBus: {
-  backgroundColor:'#0672CF',
-  padding: 10,
-  flex: 1,
-  alignItems: 'center',
-  borderRadius: 5,
-},
-});
-
-export default Busroute;
+    // {
+//   "cli": {
+//     "version": ">= 3.7.2"
+//   },
+//   "build": {
+//     "development": {
+//       "developmentClient": true,
+//       "distribution": "internal",
+//       "ios": {
+//         "resourceClass": "m1-medium"
+//       }
+//     },
+//     "preview": {
+//       "distribution": "internal",
+//       "ios": {
+//         "resourceClass": "m1-medium"
+//       }
+//     },
+//     "production": {
+//       "ios": {
+//         "resourceClass": "m1-medium"
+//       }
+//     }
+//   },
+//   "submit": {
+//     "production": {}
+//   }
+// }
