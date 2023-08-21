@@ -158,7 +158,7 @@ function Busroute() {
       <View style={{ backgroundColor: "white", flex: 1, padding: 10,paddingTop:20}}>
       <Text style={{fontSize:22,fontWeight:"bold",marginLeft:20,color:"black"}}>Dashboard</Text>
 
-        <View style={{ marginTop: 2, backgroundColor: "white",flexDirection:"row",flexWrap:'wrap'}}>
+        <View style={styles.cardContainer}>
 
 
           <TouchableOpacity onPress={()=>navigation.navigate('UpdateBus')}>
@@ -182,6 +182,8 @@ function Busroute() {
           </View>
           </TouchableOpacity> */}
 
+
+
           <TouchableOpacity onPress={()=> navigation.navigate('CallDriver')}>
           <View style={styles.card}>
             <Text style={styles.CardText}>Call Driver</Text>
@@ -194,9 +196,9 @@ function Busroute() {
           </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=> navigation.navigate('Ticketscan')}>
+          <TouchableOpacity onPress={()=> navigation.navigate('Attendence')}>
           <View style={styles.card}>
-            <Text style={styles.CardText}>Ticket Scan</Text>
+            <Text style={styles.CardText}>Attendence</Text>
           </View>
           </TouchableOpacity>
 
@@ -223,6 +225,13 @@ const styles = StyleSheet.create({
     //justifyContent:"center", 
     //alignItems:"center"
   },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: screenHeight * 0.025,
+    margin:screenHeight * 0.01
+  },
   SubConHeading:{
     flexDirection:"column", 
     justifyContent:"space-evenly", 
@@ -236,14 +245,13 @@ const styles = StyleSheet.create({
   }, 
 
   CardText:{
-    fontSize:20, 
-    fontWeight:"bold",
-    color:"white"
+    fontSize: screenWidth * 0.05,
+    fontWeight: 'bold',
+    color: 'white',
   },
   SubConMain:{
     flexDirection:"row", 
     justifyContent:"space-around",
-    // backgroundColor:"red",
     marginBottom:20
     
   }, 
@@ -254,12 +262,14 @@ const styles = StyleSheet.create({
   },
 
   card:{
-    width: 170,
-    height: 100,
+    width: screenWidth * 0.43,
+    height: screenHeight * 0.10,
     backgroundColor: colors.primary,
     borderRadius: 10,
-    padding: 12,
-    margin:15, 
+    padding: screenWidth * 0.03,
+    marginBottom: screenHeight * 0.03,
+    // justifyContent: 'center',
+    // alignItems: 'center', 
   
   }, 
   Logo:{

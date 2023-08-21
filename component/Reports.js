@@ -1,8 +1,8 @@
 import {React,useState,useLayoutEffect} from 'react';
-import { View, Text, Dimensions, StatusBar,ScrollView,TextInput,TouchableOpacity,ActivityIndicator} from 'react-native';
+import { View, Text, Dimensions, StatusBar,ScrollView,TextInput,TouchableOpacity,ActivityIndicator,Alert} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { database } from '../config/firebase';
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot ,where} from "firebase/firestore";
 import colors from '../colors';
 import DropCard from './Dropcard';
 import * as XLSX from 'xlsx';
@@ -18,8 +18,38 @@ import { Rect, Text as TextSVG, Svg } from "react-native-svg";
 const Reports = () => {
   const [seatcount,setseatcount]=useState([]);
   const [search,setSearch]=useState("");
+  const [report,setreport]=useState([]);
+  const [Routeid,setrouteid]=useState("1");
   
+  const collectionRef1 = collection(database, 'BookingHistory');
+  useLayoutEffect(() => {
+
+    const unsubscribe = onSnapshot(collectionRef1, querySnapshot => {
+      setreport(
+        querySnapshot.docs
+          .map(doc => ({
+            Id: doc.id,
+            Name: doc.data().name,
+            Email: doc.data().Email,
+            bookingDay: doc.data().day,
+            price: doc.data().price,
+            routeid: doc.data().routeid,
+            time: doc.data().time,
+            transactionId: doc.data().transactionId
+          }))
+      );
   
+      console.log(querySnapshot.size);
+    });
+  
+    return unsubscribe;
+  }, []);
+  
+
+  console.log("new");
+  console.log(report);
+
+
   // const data = {
   //   labels: ["January", "February", "March", "April", "May", "June"],
   //   datasets: [
@@ -67,7 +97,44 @@ const Reports = () => {
   
   []); 
 
+  const handledownload = async (routeid) => {
+    const filteredReport = report.filter((item) => item.routeid === `${routeid}`);
+    if (filteredReport.length === 0) {
 
+      Alert.alert('Download Failed', `No Booking Occurs`, [
+        { text: 'OK' },
+      ])
+      console.log('No data to download');
+      return;
+    }
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(filteredReport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      const wbout = XLSX.write(workbook, { type: 'base64', bookType: 'xlsx' });
+
+      const date = new Date();
+
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+      let currentDate = `${day}-${month}-${year}`;
+
+      const fileName = `Bus Booking History_ ${currentDate}.xlsx`;
+
+      const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+      await FileSystem.writeAsStringAsync(fileUri, wbout, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      await Sharing.shareAsync(fileUri, { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', dialogTitle: 'Download File' });
+    } catch (error) {
+      console.log('Error while generating the XLSX file:', error);
+    }
+
+
+  };
+  
   const createDynamicTable = (bookings) => {
 
     var date = new Date().getDate(); //Current Date
@@ -155,6 +222,8 @@ const Reports = () => {
    </View>
     );
   }
+
+
   return (
     <View style={styles.container}>
 
@@ -271,7 +340,7 @@ const Reports = () => {
             <View key={key} style={{flexDirection:"row",justifyContent:"space-between",margin:10}}>
               <View style={{height:50,width:"95%",justifyContent:"space-between",flexDirection:"row"}}>
               <Text style={{fontWeight:"bold",fontSize:18,}}>Route  {key+1} </Text>
-              <TouchableOpacity  style={styles.button}>
+              <TouchableOpacity onPress={()=>{handledownload(key+1)}} style={styles.button}>
                     <Text style={{fontSize:15,color:'white'}}>Download</Text>
                 </TouchableOpacity>
               </View>

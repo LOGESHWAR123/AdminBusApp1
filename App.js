@@ -16,7 +16,10 @@ import Signout from './component/Signout';
 import Bookings from './component/Bookings';
 import CallDriver from './component/CallDriver';
 import Reports from './component/Reports';
-import Ticketscan from './component/Ticketscan';
+import Ticketscan from './component/Attendence';
+import Attendence from './component/Attendence';
+import ScanTicket from './component/ScanTicket';
+import ScanPage from './component/ScanPage';
 
  
 const Stack = createStackNavigator();
@@ -44,7 +47,9 @@ function HomeStack() {
        <Stack.Screen name='Signout' component={Signout}/>
        <Stack.Screen name='CallDriver' component={CallDriver}/>
        <Stack.Screen name='Reports' component={Reports}/>
-       <Stack.Screen name='Ticketscan' component={Ticketscan}/>
+       <Stack.Screen name='Attendence' component={Attendence}/>
+       <Stack.Screen name='ScanTicket' component={ScanTicket}/>
+       <Stack.Screen name='ScanPage' component={ScanPage}/>
      </Stack.Navigator>
   );
 }

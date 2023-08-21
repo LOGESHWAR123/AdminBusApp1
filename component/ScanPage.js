@@ -19,7 +19,7 @@ import QRCode from 'react-native-qrcode-svg';
 
 
 
-const Ticketscan = () => {
+const ScanPage = () => {
   const [seatcount,setseatcount]=useState([]);
   const [search,setSearch]=useState("");
   const ONE_SECOND_IN_MS = 200;
@@ -42,7 +42,6 @@ const Ticketscan = () => {
           
         }))
       ),
-
       console.log(querySnapshot.size);
         });        
   
@@ -50,7 +49,6 @@ const Ticketscan = () => {
   }, 
   
   []); 
-
 
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: colors.primary, //'rgba(0, 0, 0, 0.7)'
+        backgroundColor: colors.primary, 
         padding: 16,
       },
       scanAgainText: {
@@ -152,4 +150,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default Ticketscan;
+export default ScanPage;
