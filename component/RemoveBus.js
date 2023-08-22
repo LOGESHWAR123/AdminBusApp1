@@ -58,10 +58,10 @@ const RemoveBus = () => {
             ),
         });
     }, [navigation]);
-    const collectionRef = collection(database, 'Route 1');
+    const collectionRef = collection(database, 'Buses');
     useLayoutEffect(() => {
 
-        const q = query(collectionRef, orderBy('time', 'desc'));
+        const q = query(collectionRef);
         const unsubscribe = onSnapshot(q, querySnapshot => {
           setRouteway(
             querySnapshot.docs.map(doc => 
@@ -69,7 +69,8 @@ const RemoveBus = () => {
               {
               name:doc.id,
               price: doc.data().price,
-              time:doc.data().time 
+              time:doc.data().time, 
+              routeid:doc.data().routeid,
             }))
           ),
           SetArea(
@@ -90,6 +91,31 @@ const RemoveBus = () => {
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const [seatcount,addseatcount]=useState([{"0":0}]);
+  const collectionRef1 = collection(database, "SeatBookingCount");
+  useLayoutEffect(() => {
+    const unsubscribe = onSnapshot(collectionRef1, (querySnapshot) => {
+      addseatcount(
+        querySnapshot.docs.map((doc) => ({
+          [doc.id]:doc.data().seats
+        }))
+      ),
+        
+
+      console.log(querySnapshot.size);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  function findseat(routeid){
+    for (let i = 0; i < seatcount.length; i++) {
+      if (seatcount[i][routeid]>=0) {
+        return seatcount[i][routeid]; 
+      }
+      
+    }
+  }
 
   return (
         <View style={styles.container}>
@@ -106,7 +132,7 @@ const RemoveBus = () => {
             <ScrollView>
             {filteredData.map((value,key)=>
                 <TouchableOpacity key={key} onPress={()=>handleDelete(value.name)}>
-                    <DropCard1 place={value.name} time={value.time} price={value.price} />
+                    <DropCard1 place={value.name} time={value.time} price={value.price} seat={findseat(value.routeid)} />
                 </TouchableOpacity>
             )
         }

@@ -40,7 +40,7 @@ const CallDriver = () => {
   return (
     <View style={styles.container}>
         <Text style={{marginLeft:20,fontSize:18,fontWeight:"bold",padding:5}}>Driver Details</Text>
-        <View>
+        <ScrollView>
         {driverdetails.map((value,key)=>
                 <View key={key}>
 
@@ -71,7 +71,7 @@ const CallDriver = () => {
                 </View>
             )
         }
-        </View>
+        </ScrollView>
     </View>
   );
 }

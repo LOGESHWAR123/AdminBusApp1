@@ -21,6 +21,7 @@ function Busroute() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [booking1,setbookings1] = useState(0);
   const [bus,setbus] = useState(0)
+  const [user,setuser] = useState(0)
   
   const q = collection(database, 'SeatBookingCount'); 
     useLayoutEffect(() => {
@@ -47,21 +48,23 @@ function Busroute() {
       
       []); 
 
-      const collectionRef1 = collection(database,'Buses'); 
+      const q1 = collection(database, 'users'); 
     useLayoutEffect(() => {
 
-        const q = query(collectionRef1)
-        const unsubscribe = onSnapshot(q, querySnapshot => {
-    
+        
+        const unsubscribe = onSnapshot(q1, querySnapshot => {
+          
             querySnapshot.docs.map(doc => 
               (
               {
-              Name:doc.data().Name,
-              Id:doc.data().Id,
-              destination:doc.data().Destination,
-              price:doc.data().Price,
+              mail:doc.data().mail,
+              mobile:doc.data().mobile,
+              name:doc.data().name
             }))
+          
+
           console.log(querySnapshot.size);
+          setuser(querySnapshot.size);
         });        
       
       return unsubscribe;
@@ -69,7 +72,34 @@ function Busroute() {
       
       []); 
 
-      console.log(bookings);
+      const q2 = collection(database, 'BookingHistory'); 
+    useLayoutEffect(() => {
+
+        
+        const unsubscribe = onSnapshot(q2, querySnapshot => {
+          
+            querySnapshot.docs.map(doc => 
+              (
+              {
+                Id: doc.id,
+                Name: doc.data().name,
+                Email: doc.data().Email,
+                routeid: doc.data().routeid,
+                time: doc.data().time,
+                Attendence: doc.data().Attendence,
+            }))
+          
+
+          console.log(querySnapshot.size);
+          setbookings1(querySnapshot.size);
+        });        
+      
+      return unsubscribe;
+      }, 
+      
+      []); 
+
+
   
       useEffect(() => {
         navigation.setOptions({
@@ -125,6 +155,7 @@ function Busroute() {
     // }, []);
     
 
+
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
@@ -132,7 +163,7 @@ function Busroute() {
       <View style={{flexDirection:"row",justifyContent:"center"}}>
       <Image
         style={styles.Logo}
-        source={{uri: 'https://upload.wikimedia.org/wikipedia/en/6/61/Sri_Sai_Ram_Engineering_College_logo.png'}}
+        source={{uri: 'https://sairamgroup.in/wp-content/themes/sairamgroup/images/footer-logo.png'}}
       />
       {/* <Text style={[styles.CardText,{margin:10}]}>Sairam Bus App</Text> */}
       </View>
@@ -140,7 +171,7 @@ function Busroute() {
       <View style={styles.SubConMain}>
           <View style={styles.SubConHeading}>
             <Text style={styles.SubConText}>Users</Text>
-            <Text style={styles.SubConText}>11</Text>
+            <Text style={styles.SubConText}>{user}</Text>
           </View>
 
           <View style={styles.SubConHeading}>
@@ -239,7 +270,7 @@ const styles = StyleSheet.create({
     alignItems:"center"
   },
   SubConText:{
-    fontSize:26, 
+    fontSize:22, 
     fontWeight:"bold",
     color:"white"
   }, 
@@ -263,7 +294,7 @@ const styles = StyleSheet.create({
 
   card:{
     width: screenWidth * 0.43,
-    height: screenHeight * 0.10,
+    height: screenHeight * 0.135,
     backgroundColor: colors.primary,
     borderRadius: 10,
     padding: screenWidth * 0.03,
@@ -273,8 +304,8 @@ const styles = StyleSheet.create({
   
   }, 
   Logo:{
-    width:90, 
-    height:90,
+    width:150, 
+    height:100,
     bottom:15,
   }
 

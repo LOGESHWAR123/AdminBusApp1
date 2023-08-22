@@ -22,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const ScanTicket = ({route}) => {
     const [report,setreport]=useState([]);
+    const [status,setstatus]=useState(false);
     const navigation=useNavigation();
 
     const {routeid}=route.params;
@@ -45,6 +46,7 @@ const ScanTicket = ({route}) => {
               Email: doc.data().Email,
               routeid: doc.data().routeid,
               time: doc.data().time,
+              Attendence : doc.data().Attendence,
             }))
         );
     
@@ -56,8 +58,8 @@ const ScanTicket = ({route}) => {
 
 
     const filteredReport = report.filter((item) => item.routeid === `${routeid}`);
-
     console.log(filteredReport);
+
 
 
   
@@ -96,13 +98,6 @@ const ScanTicket = ({route}) => {
 
 
 
-
-
-
-
-
-
-
   
   return (
 
@@ -110,7 +105,7 @@ const ScanTicket = ({route}) => {
 
     <View style={{flexDirection:"row-reverse",margin:15}}>
         
-        <TouchableOpacity onPress={()=>navigation.navigate('ScanPage')}>
+        <TouchableOpacity onPress={()=>navigation.navigate('ScanPage',{routeid:routeid.toString()})}>
         <View style={{height:40,width:120,backgroundColor:"blue",borderRadius:5,justifyContent:"center"}}>
         <Text style={{color:"white",textAlign:"center",fontWeight:'bold'}}>Scan Ticket</Text>
         </View>
@@ -173,10 +168,14 @@ const ScanTicket = ({route}) => {
   <Text>Hi</Text>
   </View> */}
   {/* <FontAwesome name="c" size={18} color={'#1C64D1'} style={{marginRight: 10}} /> */}
-  <Image
-        style={{width:18,height:18}}
-        source={require('../assets/cross.png')}
-  />
+  {value.Attendence ? (
+       <Image
+         style={{width:18,height:18}}
+         source={require('../assets/correct.png')}
+       />
+    ) : (
+      <Image style={{ width: 18, height: 18 }} source={require('../assets/cross.png')} />
+    )}
 </View>
   
 )

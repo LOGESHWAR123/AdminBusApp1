@@ -7,8 +7,7 @@ import DropCard from './Dropcard';
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-
-
+import colors from '../colors';
 
 
 
@@ -96,11 +95,10 @@ const Bookings = () => {
                 />
 
                 <TouchableOpacity onPress={handleDownload} style={styles.button}>
-                    <Text style={{fontSize:15,color:'white'}}>Download</Text>
+                    <Text style={{fontSize:15,color:'white',textAlign:'center',fontWeight:'bold',marginTop:4}}>Download</Text>
                 </TouchableOpacity>
         </View>
         <ScrollView style={{marginTop:15}}>
-
           <View style={{flexDirection:"row",justifyContent:"space-between"}}>
             
             <View>
@@ -134,9 +132,7 @@ const Bookings = () => {
 
             {filteredData.map((value,key)=>
             <View key={key} style={{flexDirection:"row",justifyContent:"space-between",margin:10}}>
-              <View style={{height:22,width:40,backgroundColor:"green"}}>
-              <Text style={{textAlign:"center",fontWeight:"bold",color:"white"}}>PAID</Text>
-              </View>
+              <Text style={{textAlign:"center",fontWeight:"bold",color:"green"}}>PAID</Text>
             </View>
               
             )
@@ -163,6 +159,13 @@ const styles = StyleSheet.create({
       width:"50%", 
       paddingHorizontal:10
   },
+  button : {
+    backgroundColor:colors.primary,
+    width:90,
+    height:35,
+    borderRadius:10,
+    marginTop:20
+  }
     
 });
 

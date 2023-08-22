@@ -100,15 +100,11 @@ export default function EditBus({route}) {
       </TouchableOpacity>
 
       </View>
-      <TouchableOpacity style={{justifyContent:"center",alignItems:"center",bottom:25}} onPress={toggleEditMode} >
-        <View style={{height:40,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:50}}>
+      <TouchableOpacity style={{height:40,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:20,alignSelf:'center'}} onPress={toggleEditMode} >
             <Text style={{fontSize:15,color:"white",fontWeight:"bold"}}>Edit</Text>
-        </View>
       </TouchableOpacity>
-      <TouchableOpacity style={{justifyContent:"center",alignItems:"center",bottom:40}} onPress={handleEdit}>
-      <View style={{height:40,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:30}}>
+      <TouchableOpacity style={{height:40,width:150,backgroundColor:colors.primary,borderRadius:6,justifyContent:"center",alignItems:"center",marginTop:30,alignSelf:"center"}} onPress={handleEdit}>
             <Text style={{fontSize:15,color:"white",fontWeight:"bold"} } >Submit</Text>
-        </View>
       </TouchableOpacity>
       </View>
     </View>
@@ -150,7 +146,6 @@ const styles = StyleSheet.create({
     height:50,  
     borderRadius:5,
     paddingHorizontal:10
-    
   }, 
   
 });

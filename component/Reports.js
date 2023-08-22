@@ -1,5 +1,5 @@
 import {React,useState,useLayoutEffect} from 'react';
-import { View, Text, Dimensions, StatusBar,ScrollView,TextInput,TouchableOpacity,ActivityIndicator,Alert} from 'react-native';
+import { View, Text, Dimensions, StatusBar,ScrollView,TextInput,TouchableOpacity,ActivityIndicator,Alert,Image} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { database } from '../config/firebase';
 import { collection, query, orderBy, onSnapshot ,where} from "firebase/firestore";
@@ -9,10 +9,12 @@ import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import {LineChart,BarChart,PieChart,ProgressChart,ContributionGraph,StackedBarChart} from "react-native-chart-kit"
-
 import { Rect, Text as TextSVG, Svg } from "react-native-svg";
-
-
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import { Share } from 'react-native';
+import { PDFDocument, rgb } from 'react-native-pdf-lib';
+import { ToWords } from 'to-words';
+import { printToFileAsync } from 'expo-print';
 
 
 const Reports = () => {
@@ -20,6 +22,8 @@ const Reports = () => {
   const [search,setSearch]=useState("");
   const [report,setreport]=useState([]);
   const [Routeid,setrouteid]=useState("1");
+
+
   
   const collectionRef1 = collection(database, 'BookingHistory');
   useLayoutEffect(() => {
@@ -32,6 +36,7 @@ const Reports = () => {
             Name: doc.data().name,
             Email: doc.data().Email,
             bookingDay: doc.data().day,
+            destination:doc.data().destination,
             price: doc.data().price,
             routeid: doc.data().routeid,
             time: doc.data().time,
@@ -134,33 +139,23 @@ const Reports = () => {
 
 
   };
-  
-  const createDynamicTable = (bookings) => {
 
-    var date = new Date().getDate(); //Current Date
-    var month = new Date().getMonth() + 1; //Current Month
-    var year = new Date().getFullYear(); //Current Year
-    var hours = new Date().getHours(); //Current Hours
-    var min = new Date().getMinutes(); //Current Minutes
-    var sec = new Date().getSeconds(); //Current Seconds
-    var CurrentTime = date + '/' + month + '/' + year+ ' ' + hours + ':' + min + ':' + sec;
-   
+  const handleDownloadPDF = async (routeid) => {
+    const filteredReport1 = report.filter((item) => item.routeid === `${routeid}`);
+    if (filteredReport1.length === 0) {
+      Alert.alert('Download Failed', 'No Booking Occurs', [{ text: 'OK' }]);
+      console.log('No data to download');
+      return;
+    }
   
-      var table = '';
-      var count=1;
-      for (let i in bookings) {
-        const item = array[i];
-        table = table + `
-        <tr>
-           <td>${count}</td>
-          <td>${item.time}</td>
-          <td>${item.p}</td>
-        </tr>
-        `
-        count+=1
-      }
-      //console.log(table);
-      const html = `
+    const date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let currentDate = `${day}-${month}-${year}`;
+  
+    try {
+      let html = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -183,33 +178,60 @@ const Reports = () => {
         </style>
         </head>
         <body>
-        <p>${CurrentTime}</p>
-        <h2>SPYDRAIN REPORT</h2>
+        <p>${currentDate}</p>
+        <h2>${routeid} REPORT </h2>
         
         <table>
           <tr>
-            <th>S.No</th>
-            <th>Time</th>
-            <th>Distance</th>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Destination</th>
+            <th>bookingDay</th>
+            <th>price</th>
+            <th>routeid</th>
+            <th>time</th>
+            <th>transaction id</th> 
           </tr>
-          ${table}
-        </table>
-        
-        </body>
-      </html>
+      `;
+  
+      for (const item of filteredReport1) {
+        html += `
+          <tr>
+            <td>${item.Id}</td>
+            <td>${item.name}</td>
+            <td>${item.Email}</td>
+            <td>${item.destination}</td>
+            <td>${item.day}</td>
+            <td>${item.price}</td>
+            <td>${item.routeid}</td>
+            <td>${item.time}</td>
+            <td>${item.transactionId}</td>
+          </tr>
         `;
-      return html;
+      }
+  
+      html += `
+        </table>
+        </body>
+      </html> `;
+  
+
+      const options = {
+        html:'<h1>Hello, PDF!</h1>',
+        fileName: `${currentDate}`,
+        directory: 'Documents',
+      };
+
+      const { uri } = await Print.printToFileAsync({
+        html : html,
+       });
+  
+    } catch (error) {
+      console.log('Error generating PDF: ', error);
     }
-
-
-
-
-
-
-
-
-
-
+  };
+  
 
 
 
@@ -340,6 +362,12 @@ const Reports = () => {
             <View key={key} style={{flexDirection:"row",justifyContent:"space-between",margin:10}}>
               <View style={{height:50,width:"95%",justifyContent:"space-between",flexDirection:"row"}}>
               <Text style={{fontWeight:"bold",fontSize:18,}}>Route  {key+1} </Text>
+              <TouchableOpacity onPress={()=>handleDownloadPDF(key+1)}>
+                   <Image
+                   style={{width:30,height:30,marginLeft:10}}
+                  source={require('../assets/pdf.png')} 
+                   />
+                </TouchableOpacity>
               <TouchableOpacity onPress={()=>{handledownload(key+1)}} style={styles.button}>
                     <Text style={{fontSize:15,color:'white'}}>Download</Text>
                 </TouchableOpacity>

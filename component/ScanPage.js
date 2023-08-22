@@ -1,59 +1,40 @@
-import {React,useState,useLayoutEffect,useRef,useEffect} from 'react';
-import { View, Text, Dimensions, StatusBar,ScrollView,TextInput,TouchableOpacity,ActivityIndicator,Button,Alert,Vibration} from 'react-native';
-import { StyleSheet } from 'react-native';
-import { database } from '../config/firebase';
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import colors from '../colors';
-import DropCard from './Dropcard';
-import * as XLSX from 'xlsx';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import {LineChart,BarChart,PieChart,ProgressChart,ContributionGraph,StackedBarChart} from "react-native-chart-kit"
-
-import { Rect, Text as TextSVG, Svg } from "react-native-svg";
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Vibration, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
-import QRCode from 'react-native-qrcode-svg';
+import { collection, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { useLayoutEffect } from 'react';
+import { database } from '../config/firebase';
+import colors from '../colors';
 
+const ONE_SECOND_IN_MS = 200;
 
-
-
-
-
-const ScanPage = () => {
-  const [seatcount,setseatcount]=useState([]);
-  const [search,setSearch]=useState("");
-  const ONE_SECOND_IN_MS = 200;
-
-  
-  
-
-
-
-  const collectionRef = collection(database, 'SeatBookingCount'); 
-  useLayoutEffect(() => {
-
-    const unsubscribe = onSnapshot(collectionRef, querySnapshot => {
-      setseatcount(
-        querySnapshot.docs.map(doc => 
-          (
-          {
-          name:`R ${doc.id}`,
-          seats: doc.data().seats
-          
-        }))
-      ),
-      console.log(querySnapshot.size);
-        });        
-  
-  return unsubscribe;
-  }, 
-  
-  []); 
-
+const ScanPage = ({ route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [scandata,setscandata]=useState("");
+  const [scannedData, setScannedData] = useState(null); 
+  const [report, setreport] = useState([]);
   const cameraRef = useRef(null);
+
+  const { routeid } = route.params;
+
+  const collectionRef1 = collection(database, 'BookingHistory');
+  useLayoutEffect(() => {
+    const unsubscribe = onSnapshot(collectionRef1, querySnapshot => {
+      setreport(
+        querySnapshot.docs.map(doc => ({
+          Id: doc.id,
+          Name: doc.data().name,
+          Email: doc.data().Email,
+          routeid: doc.data().routeid,
+          time: doc.data().time,
+          Attendence: doc.data().Attendence,
+        }))
+      );
+    });
+    return unsubscribe;
+  }, []);
+
+  const filteredReport = report.filter(item => item.routeid === `${routeid}`);
 
   useEffect(() => {
     (async () => {
@@ -62,38 +43,42 @@ const ScanPage = () => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    setscandata(data);
-    Vibration.vibrate(ONE_SECOND_IN_MS)
-    // alert(`Scanned data: ${data}`);
-    // You can perform any action with the scanned data here
+    setScannedData(data); 
+    Vibration.vibrate(ONE_SECOND_IN_MS);
+
+    const check = filteredReport.some(item => item.Id === `${data}`);
+    if (!check) {
+      Alert.alert('Scan Failed', `${data} - not booked in this bus`, [
+        { text: 'OK' },
+      ]);
+      setScannedData(null); 
+    } else {
+      try {
+       
+        const docToUpdate = doc(collectionRef1, data);
+        await updateDoc(docToUpdate, { Attendence: true });
+        console.log('Document successfully updated!');
+      } catch (error) {
+        console.error('Error updating document:', error);
+      }
+    }
   };
 
   const handleScanAgain = () => {
     setScanned(false);
+    setScannedData(null); 
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting camera permission</Text>;
+    return <Text style={styles.text}>Requesting camera permission</Text>;
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text style={styles.text}>No access to camera</Text>;
   }
 
-
-
-
-
-
-
-
-
-
-
-  
   return (
-
     <View style={styles.container}>
       <Camera
         style={styles.camera}
@@ -101,53 +86,57 @@ const ScanPage = () => {
         ref={cameraRef}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       />
-      <Text>{scandata}</Text>
+      {scannedData && (
+        <Text style={styles.scannedDataText}>
+         {scannedData}
+        </Text>
+      )}
       {scanned && (
         <View style={styles.scanAgainContainer}>
-         
           <TouchableOpacity style={styles.scanAgainButton} onPress={handleScanAgain}>
             <Text style={styles.scanAgainButtonText}>Scan Again</Text>
           </TouchableOpacity>
         </View>
       )}
-      {/* <QRCode
-      value="String"
-    /> */}
     </View>
-    
-    
   );
-}
+};
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-      },
-      camera: {
-        height:500
-      },
-      scanAgainContainer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colors.primary, 
-        padding: 16,
-      },
-      scanAgainText: {
-        color: 'white',
-        fontSize: 16,
-        textAlign: 'center',
-      },
-      scanAgainButton: {
-        alignItems: 'center',
-        marginTop: 8,
-      },
-      scanAgainButtonText: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight:"bold"
-      },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  camera: {
+    height: 400,
+  },
+  scannedDataText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  scanAgainContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.primary,
+    padding: 16,
+  },
+  scanAgainButton: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  scanAgainButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  text: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
 });
 
 export default ScanPage;
