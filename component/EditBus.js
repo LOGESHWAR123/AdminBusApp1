@@ -88,7 +88,7 @@ export default function EditBus({route}) {
                   editable={editMode}
                   onChangeText={(text) => setroute(text)}
         /> 
-        <Text>Time</Text>
+        <Text>Departure Time</Text>
         <TouchableOpacity onPress={showTimePicker} style={styles.loginbox} >
          <Text style={{marginTop:'4%',color:color}}>{time.toString()}</Text>
                 <DateTimePicker

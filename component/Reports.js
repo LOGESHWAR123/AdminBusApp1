@@ -13,9 +13,9 @@ import { Rect, Text as TextSVG, Svg } from "react-native-svg";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import { Share } from 'react-native';
 import { PDFDocument, rgb } from 'react-native-pdf-lib';
+import * as Print from 'expo-print';
 import { ToWords } from 'to-words';
-import { printToFileAsync } from 'expo-print';
-
+import { shareAsync } from 'expo-sharing';
 
 const Reports = () => {
   const [seatcount,setseatcount]=useState([]);
@@ -49,7 +49,8 @@ const Reports = () => {
   
     return unsubscribe;
   }, []);
-  
+
+
 
   console.log("new");
   console.log(report);
@@ -160,6 +161,16 @@ const Reports = () => {
       <html>
         <head>
         <style>
+        .container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .centered-image {
+          max-width: 100%;
+          max-height: 100%;
+        }
+
           table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
@@ -178,8 +189,11 @@ const Reports = () => {
         </style>
         </head>
         <body>
-        <p>${currentDate}</p>
-        <h2>${routeid} REPORT </h2>
+        <div class="container">
+        <img class="centered-image" src="https://sairamgroup.in/wp-content/themes/sairamgroup/images/footer-logo.png" alt="Centered Logo" />
+        </div>
+        <p>${currentDate} - REPORT GENERATION </p>
+        <h2>ROUTE ID - ${routeid} REPORT </h2>
         
         <table>
           <tr>
@@ -199,10 +213,10 @@ const Reports = () => {
         html += `
           <tr>
             <td>${item.Id}</td>
-            <td>${item.name}</td>
+            <td>${item.Name}</td>
             <td>${item.Email}</td>
             <td>${item.destination}</td>
-            <td>${item.day}</td>
+            <td>${item. bookingDay}</td>
             <td>${item.price}</td>
             <td>${item.routeid}</td>
             <td>${item.time}</td>
@@ -218,14 +232,16 @@ const Reports = () => {
   
 
       const options = {
-        html:'<h1>Hello, PDF!</h1>',
-        fileName: `${currentDate}`,
+        html:`<h1>Hello, PDF!</h1>`,
+        fileName: 'application',
         directory: 'Documents',
       };
 
       const { uri } = await Print.printToFileAsync({
         html : html,
        });
+       console.log('File has been saved to:', uri);
+       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   
     } catch (error) {
       console.log('Error generating PDF: ', error);
